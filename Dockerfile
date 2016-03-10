@@ -37,3 +37,5 @@ LABEL   io.k8s.description="Image for building and running nginx php-fpm based w
 EXPOSE 8080
 
 USER 1001
+
+CMD ["nginx"]
