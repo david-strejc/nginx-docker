@@ -12,7 +12,7 @@ ENV HOME=/home \
 	APP_PUBLIC_PATH=public \
 	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/npm/bin:/home/app-root/node_modules/.bin
 
-RUN curl -s -o /etc/nginx/nginx.conf https://raw.githubusercontent.com/nitintutlani/dev-docker-images/master/nginx-php-fpm/config/nginx.conf
+RUN curl -s -o /etc/nginx/nginx.conf https://raw.githubusercontent.com/david-strejc/nginx-docker/master/nginx.conf
 
 RUN mkdir -p ${APP_ROOT} && \
 	mkdir -p ${NPM_CONFIG_PREFIX} && \
