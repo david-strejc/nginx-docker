@@ -24,17 +24,8 @@ RUN mkdir -p ${APP_ROOT} && \
 	mkdir /tmp/nginx && \
 	chown -R 1001:0 /tmp/nginx && \
 	chmod -R ug+rwx /tmp/nginx && \
-	mkdir /tmp/php-fpm && \
-	chown -R 1001:0 /tmp/php-fpm && \
-	chmod -R ug+rwx /tmp/php-fpm && \
-	mkdir /tmp/sessions && \
-	chmod -R ug+rwx /tmp/sessions && \
 	chmod ug+rwx /etc/nginx/nginx.conf && \
-	chmod ug+rwx /etc/php/php.ini && \
-	chmod ug+rwx /etc/php/php-fpm.conf && \
-	sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/php.ini && \
-	sed -i -- 's#${APP_ROOT}#'"${APP_ROOT}"/"${APP_PUBLIC_PATH}"'#g' /etc/nginx/nginx.conf && \
-	sed -i -- 's#${APP_ROOT}#'"${APP_ROOT}"/"${APP_PUBLIC_PATH}"'#g' /etc/php/php-fpm.conf
+	sed -i -- 's#${APP_ROOT}#'"${APP_ROOT}"/"${APP_PUBLIC_PATH}"'#g' /etc/nginx/nginx.conf
 
 WORKDIR ${APP_ROOT}
 
