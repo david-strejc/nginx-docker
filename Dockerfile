@@ -2,7 +2,7 @@ FROM mhart/alpine-node:latest
 
 MAINTAINER "Nitin Tutlani" <nitintutlani@yahoo.com>
 
-RUN apk -U add ca-certificates nginx git openssl mysql-client curl \
+RUN apk -U add ca-certificates nginx git openssl mysql-client curl bash \
 	rm -rf /var/cache/apk/*
 
 ENV HOME=/home \
