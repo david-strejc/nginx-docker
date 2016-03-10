@@ -1,29 +1,48 @@
-#
-# Nginx Dockerfile
-#
-# https://github.com/dockerfile/nginx
-#
+FROM mhart/alpine-node:latest
 
-# Pull base image.
-FROM dockerfile/ubuntu
+MAINTAINER "Nitin Tutlani" <nitintutlani@yahoo.com>
 
-# Install Nginx.
-RUN \
-  add-apt-repository -y ppa:nginx/stable && \
-  apt-get update && \
-  apt-get install -y nginx && \
-  rm -rf /var/lib/apt/lists/* && \
-  echo "\ndaemon off;" >> /etc/nginx/nginx.conf && \
-  chown -R www-data:www-data /var/lib/nginx
+RUN apk -U add ca-certificates nginx git openssl mysql-client curl \
+	rm -rf /var/cache/apk/*
 
-RUN sed -i -e"s/80/8080/" /etc/nginx/nginx.conf
+ENV HOME=/home \
+	TERM=dumb \
+	NPM_CONFIG_PREFIX=/home/npm \
+	APP_ROOT=/home/app-root \
+	APP_PUBLIC_PATH=public \
+	PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/home/npm/bin:/home/app-root/node_modules/.bin
 
-# Define working directory.
-WORKDIR /etc/nginx
+RUN curl -s -o /etc/nginx/nginx.conf https://raw.githubusercontent.com/nitintutlani/dev-docker-images/master/nginx-php-fpm/config/nginx.conf
 
-# Define default command.
-CMD ["nginx"]
+RUN mkdir -p ${APP_ROOT} && \
+	mkdir -p ${NPM_CONFIG_PREFIX} && \
+	chown -R 1001:0 ${HOME} && \
+	chmod -R ug+rwx ${HOME} && \
+	mkdir /tmp/logs && \
+	chown -R 1001:0 /tmp/logs && \
+	chmod -R ug+rwx /tmp/logs && \
+	mkdir /tmp/nginx && \
+	chown -R 1001:0 /tmp/nginx && \
+	chmod -R ug+rwx /tmp/nginx && \
+	mkdir /tmp/php-fpm && \
+	chown -R 1001:0 /tmp/php-fpm && \
+	chmod -R ug+rwx /tmp/php-fpm && \
+	mkdir /tmp/sessions && \
+	chmod -R ug+rwx /tmp/sessions && \
+	chmod ug+rwx /etc/nginx/nginx.conf && \
+	chmod ug+rwx /etc/php/php.ini && \
+	chmod ug+rwx /etc/php/php-fpm.conf && \
+	sed -i 's/;cgi.fix_pathinfo=1/cgi.fix_pathinfo=0/g' /etc/php/php.ini && \
+	sed -i -- 's#${APP_ROOT}#'"${APP_ROOT}"/"${APP_PUBLIC_PATH}"'#g' /etc/nginx/nginx.conf && \
+	sed -i -- 's#${APP_ROOT}#'"${APP_ROOT}"/"${APP_PUBLIC_PATH}"'#g' /etc/php/php-fpm.conf
 
-# Expose ports.
+WORKDIR ${APP_ROOT}
+
+LABEL   io.k8s.description="Image for building and running nginx php-fpm based web applications" \
+		io.k8s.display-name="Nginx php-fpm web application" \
+		io.openshift.expose-services="8080:http" \
+		io.openshift.tags="builder,nginx,php-fpm,web application"
+
 EXPOSE 8080
-EXPOSE 4443
+
+USER 1001
